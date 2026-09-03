@@ -7,9 +7,9 @@ import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useMovieSearch } from "../hooks/useMovieSearch";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import type { Movie } from "../types/movie";
+import { POSTER_THUMB_BASE_URL } from "../constants/images";
 import MobileDrawer from "./MobileDrawer";
 
-const POSTER_THUMB_BASE_URL = "https://image.tmdb.org/t/p/w92";
 const MAX_RESULTS_SHOWN = 6;
 const EXPANDED_WIDTH = 360;
 const COLLAPSED_WIDTH = 36;
@@ -112,9 +112,7 @@ const SearchBar = ({ isOpen, onOpen, onClose }: SearchBarProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [query, setQuery] = useState("");
-  const [prefersReducedMotion] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   const { results, isLoading, error, hasQuery } = useMovieSearch(query);
   const visibleResults = results.slice(0, MAX_RESULTS_SHOWN);

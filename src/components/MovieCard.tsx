@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import type { Movie } from "../types/movie";
 import { getGenreNames } from "../constants/genres";
+import { POSTER_BASE_URL } from "../constants/images";
 import WatchlistButton from "./WatchlistButton";
 
-const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w342";
 const MAX_GENRES_SHOWN = 2;
 
 interface MovieCardProps {

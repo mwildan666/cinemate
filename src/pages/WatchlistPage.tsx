@@ -1,14 +1,12 @@
-import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useWatchlist } from "../hooks/useWatchlist";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { MOVIE_LIST_GRID_CLASSES } from "../constants/layout";
 import MovieCard from "../components/MovieCard";
 
 const WatchlistPage = () => {
   const { watchlist } = useWatchlist();
-  const [prefersReducedMotion] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   return (
     <div className="mx-auto max-w-7xl px-4 pt-24 pb-12">

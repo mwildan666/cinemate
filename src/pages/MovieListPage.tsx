@@ -9,6 +9,7 @@ import type { TMDBResponse } from "../types/movie";
 import { usePaginatedMovies } from "../hooks/usePaginatedMovies";
 import { MOVIE_LIST_GRID_CLASSES } from "../constants/layout";
 import MovieCard from "../components/MovieCard";
+import CardSkeletonGrid from "../components/CardSkeletonGrid";
 
 const SKELETON_COUNT = 10;
 
@@ -59,14 +60,10 @@ const MovieListPage = ({
       )}
 
       {isLoading && (
-        <div className={`${MOVIE_LIST_GRID_CLASSES} mt-6`} aria-hidden="true">
-          {Array.from({ length: SKELETON_COUNT }, (_, i) => (
-            <div
-              key={i}
-              className="aspect-2/3 w-full animate-pulse rounded-lg bg-neutral-900"
-            />
-          ))}
-        </div>
+        <CardSkeletonGrid
+          count={SKELETON_COUNT}
+          gridClassName={`${MOVIE_LIST_GRID_CLASSES} mt-6`}
+        />
       )}
 
       {!isLoading && error && (

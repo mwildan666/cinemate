@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faHeart, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useWatchlist } from "../hooks/useWatchlist";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import type { Movie } from "../types/movie";
 
 interface WatchlistButtonProps {
@@ -24,9 +24,7 @@ const WatchlistButton = ({
 }: WatchlistButtonProps) => {
   const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const inWatchlist = isInWatchlist(movie.id);
-  const [prefersReducedMotion] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  );
+  const prefersReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   return (
     <motion.button

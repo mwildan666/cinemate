@@ -18,16 +18,14 @@ import type {
 } from "../types/movie";
 import WatchlistButton from "../components/WatchlistButton";
 import MovieSection from "../components/MovieSection";
+import {
+  BACKDROP_BASE_URL,
+  buildBackdropSrcSet,
+  POSTER_BASE_URL,
+  PROVIDER_LOGO_BASE_URL,
+  PROFILE_BASE_URL,
+} from "../constants/images";
 
-const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/w1280";
-const BACKDROP_SRCSET = [
-  ["w780", 780],
-  ["w1280", 1280],
-  ["original", 1920],
-] as const;
-const POSTER_BASE_URL = "https://image.tmdb.org/t/p/w342";
-const PROVIDER_LOGO_BASE_URL = "https://image.tmdb.org/t/p/w45";
-const PROFILE_BASE_URL = "https://image.tmdb.org/t/p/w185";
 const MAX_CAST_SHOWN = 12;
 
 const formatRuntime = (minutes: number | null) => {
@@ -60,6 +58,14 @@ const MovieDetailPage = () => {
   const dragStartRef = useRef({ startX: 0, scrollLeft: 0 });
   const [isDraggingCast, setIsDraggingCast] = useState(false);
 
+  // MovieDetailPage is reused (not remounted) when navigating between movies
+  // via "Similar Movies" links, since only the :id route param changes — so
+  // scroll position from the previous movie would otherwise carry over.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+    if (castScrollRef.current) castScrollRef.current.scrollLeft = 0;
+  }, [movieId]);
+
   const handleCastMouseDown = (e: ReactMouseEvent<HTMLDivElement>) => {
     if (!castScrollRef.current) return;
     dragStartRef.current = {
@@ -81,15 +87,23 @@ const MovieDetailPage = () => {
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", stopDragging);
+    // If the button is released outside the browser window (or the window
+    // loses focus entirely, e.g. alt-tab), no "mouseup" reaches `document` —
+    // without this, isDraggingCast would stay stuck true and any later
+    // mouse movement over the page would keep yanking the scroll position.
+    window.addEventListener("blur", stopDragging);
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", stopDragging);
+      window.removeEventListener("blur", stopDragging);
     };
   }, [isDraggingCast]);
 
   const cast = credits?.cast.slice(0, MAX_CAST_SHOWN) ?? [];
   const watchProviders =
-    providers?.flatrate ?? providers?.rent ?? providers?.buy ?? [];
+    [providers?.flatrate, providers?.rent, providers?.buy].find(
+      (list) => list && list.length > 0,
+    ) ?? [];
 
   if (isLoading) {
     return (
@@ -110,12 +124,7 @@ const MovieDetailPage = () => {
   const backdropUrl = movie.backdrop_path
     ? `${BACKDROP_BASE_URL}${movie.backdrop_path}`
     : null;
-  const backdropSrcSet = movie.backdrop_path
-    ? BACKDROP_SRCSET.map(
-        ([size, width]) =>
-          `https://image.tmdb.org/t/p/${size}${movie.backdrop_path} ${width}w`,
-      ).join(", ")
-    : undefined;
+  const backdropSrcSet = buildBackdropSrcSet(movie.backdrop_path);
   const posterUrl = movie.poster_path
     ? `${POSTER_BASE_URL}${movie.poster_path}`
     : null;

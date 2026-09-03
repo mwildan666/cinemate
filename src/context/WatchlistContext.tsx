@@ -1,14 +1,23 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import type { Movie } from "../types/movie";
 import { WatchlistContext } from "./watchlist-context";
 
 const STORAGE_KEY = "cinemate:watchlist";
 
+const isStoredMovie = (value: unknown): value is Movie =>
+  typeof value === "object" &&
+  value !== null &&
+  typeof (value as Movie).id === "number" &&
+  typeof (value as Movie).title === "string" &&
+  typeof (value as Movie).vote_average === "number";
+
 const readStoredWatchlist = (): Movie[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Movie[]) : [];
+    if (!raw) return [];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(isStoredMovie) : [];
   } catch {
     return [];
   }
@@ -38,10 +47,16 @@ export const WatchlistProvider = ({ children }: { children: ReactNode }) => {
     );
   }, []);
 
+  // Without this, a new object literal on every render would make every
+  // consumer (e.g. a WatchlistButton on each of dozens of movie cards)
+  // re-render whenever any single watchlist toggle changes `watchlist`.
+  const value = useMemo(
+    () => ({ watchlist, isInWatchlist, toggleWatchlist }),
+    [watchlist, isInWatchlist, toggleWatchlist],
+  );
+
   return (
-    <WatchlistContext.Provider
-      value={{ watchlist, isInWatchlist, toggleWatchlist }}
-    >
+    <WatchlistContext.Provider value={value}>
       {children}
     </WatchlistContext.Provider>
   );

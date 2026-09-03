@@ -6,6 +6,7 @@ import type { TMDBResponse } from "../types/movie";
 import { useMovies } from "../hooks/useMovies";
 import { MOVIE_GRID_CLASSES } from "../constants/layout";
 import MovieCard from "./MovieCard";
+import CardSkeletonGrid from "./CardSkeletonGrid";
 
 const CARD_LIMIT = 6;
 
@@ -47,14 +48,7 @@ const MovieSection = ({
       </div>
 
       {isLoading && (
-        <div className={MOVIE_GRID_CLASSES} aria-hidden="true">
-          {Array.from({ length: CARD_LIMIT }, (_, i) => (
-            <div
-              key={i}
-              className="aspect-2/3 w-full animate-pulse rounded-lg bg-neutral-900"
-            />
-          ))}
-        </div>
+        <CardSkeletonGrid count={CARD_LIMIT} gridClassName={MOVIE_GRID_CLASSES} />
       )}
 
       {!isLoading && error && (

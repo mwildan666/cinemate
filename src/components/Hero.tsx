@@ -10,16 +10,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { fetchNowPlayingMovies } from "../api/tmdb";
 import { useMovies } from "../hooks/useMovies";
+import { useMediaQuery } from "../hooks/useMediaQuery";
+import { BACKDROP_BASE_URL, buildBackdropSrcSet } from "../constants/images";
 import WatchlistButton from "./WatchlistButton";
 
 const MAX_SLIDES = 10;
 const AUTOPLAY_INTERVAL_MS = 6000;
-const BACKDROP_BASE_URL = "https://image.tmdb.org/t/p/w1280";
-const BACKDROP_SRCSET = [
-  ["w780", 780],
-  ["w1280", 1280],
-  ["original", 1920],
-] as const;
 
 const chevronIcon = {
   left: faChevronLeft,
@@ -50,10 +46,11 @@ const Hero = () => {
   const slides = movies.slice(0, MAX_SLIDES);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
-  const [prefersReducedMotion] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  const [isFocused, setIsFocused] = useState(false);
+  const isPaused = isHovering || isFocused;
+  const prefersReducedMotion = useMediaQuery(
+    "(prefers-reduced-motion: reduce)",
   );
 
   const activeMovie = slides[activeIndex];
@@ -92,12 +89,7 @@ const Hero = () => {
   const backdropUrl = activeMovie.backdrop_path
     ? `${BACKDROP_BASE_URL}${activeMovie.backdrop_path}`
     : null;
-  const backdropSrcSet = activeMovie.backdrop_path
-    ? BACKDROP_SRCSET.map(
-        ([size, width]) =>
-          `https://image.tmdb.org/t/p/${size}${activeMovie.backdrop_path} ${width}w`,
-      ).join(", ")
-    : undefined;
+  const backdropSrcSet = buildBackdropSrcSet(activeMovie.backdrop_path);
   const releaseYear = activeMovie.release_date?.slice(0, 4);
 
   return (
@@ -105,16 +97,10 @@ const Hero = () => {
       aria-roledescription="carousel"
       aria-label="Now playing movies"
       className="relative h-[70vh] min-h-105 w-full overflow-hidden bg-neutral-900"
-      onMouseEnter={() => {
-        setIsPaused(true);
-        setIsHovering(true);
-      }}
-      onMouseLeave={() => {
-        setIsPaused(false);
-        setIsHovering(false);
-      }}
-      onFocus={() => setIsPaused(true)}
-      onBlur={() => setIsPaused(false)}
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       onKeyDown={handleKeyDown}
     >
       <AnimatePresence>

@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import SearchBar from "./SearchBar";
 import BurgerButton from "./BurgerButton";
 import MobileDrawer from "./MobileDrawer";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 
 const links = [
   { to: "/", label: "Home" },
@@ -21,8 +22,8 @@ const SHIMMER_GRADIENT =
 // and ends fully outside the text bounds so it fades in from nothing and
 // fades back out to nothing, rather than freezing mid-word.
 const ShimmerText = ({ children }: { children: string }) => {
-  const [prefersReducedMotion] = useState(
-    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  const prefersReducedMotion = useMediaQuery(
+    "(prefers-reduced-motion: reduce)",
   );
 
   return (

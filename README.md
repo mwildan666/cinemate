@@ -2,7 +2,7 @@
 
 A movie catalog web app built with React, TypeScript, and the TMDB API. Browse now playing, popular, top rated, and upcoming movies, search across TMDB's catalog, view full movie details, and build a personal watchlist — all saved locally in your browser.
 
-**Live demo:** _add link after deploying_
+**Live demo:** [cinemate-tmdb-app.netlify.app](https://cinemate-tmdb-app.netlify.app/)
 
 ## Features
 

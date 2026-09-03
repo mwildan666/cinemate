@@ -13,8 +13,6 @@ export const useMovieSearch = (query: string) => {
   const [error, setError] = useState<string | null>(null);
   const [loadedQuery, setLoadedQuery] = useState(debouncedQuery);
 
-  // Reset results/error when the debounced query changes, without an effect
-  // (see https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
   if (debouncedQuery !== loadedQuery) {
     setLoadedQuery(debouncedQuery);
     setResults([]);

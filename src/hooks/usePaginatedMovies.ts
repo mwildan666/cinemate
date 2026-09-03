@@ -1,14 +1,28 @@
 import { useEffect, useState } from "react";
 import type { Movie, TMDBResponse } from "../types/movie";
 
-export const useMovies = (fetcher: () => Promise<TMDBResponse>) => {
+const TMDB_MAX_PAGE = 500;
+
+export const usePaginatedMovies = (
+  fetcher: (page: number) => Promise<TMDBResponse>,
+) => {
+  const [page, setPage] = useState(1);
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalResults, setTotalResults] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loadedFetcher, setLoadedFetcher] = useState(() => fetcher);
+  const [loadedPage, setLoadedPage] = useState(page);
 
   if (fetcher !== loadedFetcher) {
     setLoadedFetcher(() => fetcher);
+    setLoadedPage(1);
+    setPage(1);
+    setIsLoading(true);
+    setError(null);
+  } else if (page !== loadedPage) {
+    setLoadedPage(page);
     setIsLoading(true);
     setError(null);
   }
@@ -16,9 +30,13 @@ export const useMovies = (fetcher: () => Promise<TMDBResponse>) => {
   useEffect(() => {
     let cancelled = false;
 
-    fetcher()
+    fetcher(page)
       .then((res) => {
-        if (!cancelled) setMovies(res.results);
+        if (!cancelled) {
+          setMovies(res.results);
+          setTotalPages(Math.min(res.total_pages, TMDB_MAX_PAGE));
+          setTotalResults(res.total_results);
+        }
       })
       .catch((err: unknown) => {
         if (!cancelled) {
@@ -34,7 +52,7 @@ export const useMovies = (fetcher: () => Promise<TMDBResponse>) => {
     return () => {
       cancelled = true;
     };
-  }, [fetcher]);
+  }, [fetcher, page]);
 
-  return { movies, isLoading, error };
+  return { movies, isLoading, error, page, setPage, totalPages, totalResults };
 };

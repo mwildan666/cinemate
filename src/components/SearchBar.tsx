@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
@@ -12,6 +12,7 @@ const COLLAPSED_WIDTH = 36;
 
 const SearchBar = () => {
   const listboxId = useId();
+  const navigate = useNavigate();
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -44,6 +45,12 @@ const SearchBar = () => {
   const activate = () => {
     setIsActive(true);
     requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const goToSearchPage = () => {
+    if (!hasQuery) return;
+    navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    collapse();
   };
 
   return (
@@ -85,6 +92,8 @@ const SearchBar = () => {
             if (e.key === "Escape") {
               collapse();
               inputRef.current?.blur();
+            } else if (e.key === "Enter") {
+              goToSearchPage();
             }
           }}
           placeholder="Search movies..."
@@ -163,6 +172,16 @@ const SearchBar = () => {
                 </li>
               ))}
             </ul>
+          )}
+
+          {!isLoading && !error && results.length > 0 && (
+            <button
+              type="button"
+              onClick={goToSearchPage}
+              className="block w-full border-t border-neutral-800 px-4 py-2.5 text-center text-sm font-bold text-accent transition-colors hover:bg-neutral-800 focus-visible:bg-neutral-800 focus-visible:outline-none"
+            >
+              See all results
+            </button>
           )}
         </div>
       )}

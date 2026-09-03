@@ -15,17 +15,17 @@ const HomePage = () => {
         <MovieSection
           title="Popular"
           fetcher={fetchPopularMovies}
-          viewAllHref="/popular"
+          viewAllHref="/discover?filter=popular"
         />
         <MovieSection
           title="Top Rated"
           fetcher={fetchTopRatedMovies}
-          viewAllHref="/top-rated"
+          viewAllHref="/discover?filter=top-rated"
         />
         <MovieSection
           title="Upcoming"
           fetcher={fetchUpcomingMovies}
-          viewAllHref="/upcoming"
+          viewAllHref="/discover?filter=upcoming"
           showRating={false}
         />
       </div>

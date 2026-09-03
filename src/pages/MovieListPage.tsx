@@ -1,5 +1,5 @@
 import { useEffect, useId } from "react";
-import type { FormEvent } from "react";
+import type { ReactNode, SubmitEvent } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -18,6 +18,7 @@ interface MovieListPageProps {
   showRating?: boolean;
   showResultCount?: boolean;
   emptyMessage?: string;
+  headerExtra?: ReactNode;
 }
 
 const MovieListPage = ({
@@ -26,12 +27,13 @@ const MovieListPage = ({
   showRating = true,
   showResultCount = false,
   emptyMessage = "No movies found.",
+  headerExtra,
 }: MovieListPageProps) => {
   const jumpInputId = useId();
   const { movies, isLoading, error, page, setPage, totalPages, totalResults } =
     usePaginatedMovies(fetcher);
 
-  const handleJumpToPage = (e: FormEvent<HTMLFormElement>) => {
+  const handleJumpToPage = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const value = Number(new FormData(e.currentTarget).get("page"));
     if (Number.isInteger(value) && value >= 1 && value <= totalPages) {
@@ -45,7 +47,10 @@ const MovieListPage = ({
 
   return (
     <div className="mx-auto max-w-7xl px-4 pt-24 pb-12">
-      <h1 className="text-2xl font-bold text-accent sm:text-3xl">{title}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold text-accent sm:text-3xl">{title}</h1>
+        {headerExtra}
+      </div>
       {showResultCount && !isLoading && !error && (
         <p className="mt-1 text-sm text-neutral-400">
           {totalResults.toLocaleString()}{" "}

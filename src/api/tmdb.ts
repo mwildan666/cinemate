@@ -1,11 +1,11 @@
-import type { TMDBResponse, WatchProvidersResponse } from '../types/movie';
+import type { TMDBResponse, WatchProvidersResponse } from "../types/movie";
 
 const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
 const TOKEN = import.meta.env.VITE_TMDB_TOKEN;
 
 const headers = {
   Authorization: `Bearer ${TOKEN}`,
-  accept: 'application/json',
+  accept: "application/json",
 };
 
 async function fetchJSON<T>(url: string): Promise<T> {
@@ -21,17 +21,31 @@ async function fetchJSON<T>(url: string): Promise<T> {
 const fetchFromTMDB = (endpoint: string, page = 1) =>
   fetchJSON<TMDBResponse>(`${BASE_URL}${endpoint}?page=${page}`);
 
+const todayISODate = () => new Date().toISOString().slice(0, 10);
+
 export const fetchPopularMovies = (page = 1) =>
-  fetchFromTMDB('/movie/popular', page);
+  fetchFromTMDB("/movie/popular", page);
 
 export const fetchTopRatedMovies = (page = 1) =>
-  fetchFromTMDB('/movie/top_rated', page);
+  fetchFromTMDB("/movie/top_rated", page);
 
-export const fetchUpcomingMovies = (page = 1) =>
-  fetchFromTMDB('/movie/upcoming', page);
+export const fetchUpcomingMovies = async (page = 1) => {
+  const data = await fetchFromTMDB("/movie/upcoming", page);
+  const today = todayISODate();
+  return {
+    ...data,
+    results: data.results.filter((movie) => movie.release_date > today),
+  };
+};
 
-export const fetchNowPlayingMovies = (page = 1) =>
-  fetchFromTMDB('/movie/now_playing', page);
+export const fetchNowPlayingMovies = async (page = 1) => {
+  const data = await fetchFromTMDB("/movie/now_playing", page);
+  const today = todayISODate();
+  return {
+    ...data,
+    results: data.results.filter((movie) => movie.release_date <= today),
+  };
+};
 
 export const fetchWatchProviders = (movieId: number) =>
   fetchJSON<WatchProvidersResponse>(

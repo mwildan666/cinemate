@@ -9,6 +9,7 @@ const links = [
   { to: "/", label: "Home" },
   { to: "/now-playing", label: "Now Playing", shimmer: true },
   { to: "/discover", label: "Discover" },
+  { to: "/watchlist", label: "Watchlist" },
 ];
 
 const SHIMMER_GRADIENT =

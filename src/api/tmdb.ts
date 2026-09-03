@@ -1,4 +1,9 @@
-import type { TMDBResponse, WatchProvidersResponse } from "../types/movie";
+import type {
+  CreditsResponse,
+  MovieDetails,
+  TMDBResponse,
+  WatchProvidersResponse,
+} from "../types/movie";
 
 const BASE_URL = import.meta.env.VITE_TMDB_BASE_URL;
 const TOKEN = import.meta.env.VITE_TMDB_TOKEN;
@@ -41,4 +46,15 @@ export const searchMovies = (query: string, page = 1) =>
 export const fetchWatchProviders = (movieId: number) =>
   fetchJSON<WatchProvidersResponse>(
     `${BASE_URL}/movie/${movieId}/watch/providers`,
+  );
+
+export const fetchMovieDetails = (movieId: number) =>
+  fetchJSON<MovieDetails>(`${BASE_URL}/movie/${movieId}`);
+
+export const fetchMovieCredits = (movieId: number) =>
+  fetchJSON<CreditsResponse>(`${BASE_URL}/movie/${movieId}/credits`);
+
+export const fetchSimilarMovies = (movieId: number, page = 1) =>
+  fetchJSON<TMDBResponse>(
+    `${BASE_URL}/movie/${movieId}/recommendations?page=${page}`,
   );

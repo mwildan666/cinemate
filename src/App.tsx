@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import MovieListPage from "./pages/MovieListPage";
 import DiscoverPage from "./pages/DiscoverPage";
 import SearchPage from "./pages/SearchPage";
+import MovieDetailPage from "./pages/MovieDetailPage";
 import { fetchNowPlayingMovies } from "./api/tmdb";
 
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
         />
         <Route path="/discover" element={<DiscoverPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/movie/:id" element={<MovieDetailPage />} />
       </Route>
     </Routes>
   );

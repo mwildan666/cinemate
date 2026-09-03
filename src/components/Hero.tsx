@@ -7,12 +7,10 @@ import {
   faChevronLeft,
   faChevronRight,
   faCircleInfo,
-  faCheck,
-  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { fetchNowPlayingMovies } from "../api/tmdb";
 import { useMovies } from "../hooks/useMovies";
-import { useWatchlist } from "../hooks/useWatchlist";
+import WatchlistButton from "./WatchlistButton";
 
 const MAX_SLIDES = 10;
 const AUTOPLAY_INTERVAL_MS = 6000;
@@ -59,7 +57,6 @@ const Hero = () => {
   );
 
   const activeMovie = slides[activeIndex];
-  const { isInWatchlist, toggleWatchlist } = useWatchlist();
   const shouldAutoAdvance = slides.length > 1 && !prefersReducedMotion;
 
   const goToPrevious = () =>
@@ -102,7 +99,6 @@ const Hero = () => {
       ).join(", ")
     : undefined;
   const releaseYear = activeMovie.release_date?.slice(0, 4);
-  const inWatchlist = isInWatchlist(activeMovie.id);
 
   return (
     <section
@@ -187,30 +183,7 @@ const Hero = () => {
             View Details
           </Link>
 
-          <motion.button
-            type="button"
-            onClick={() => toggleWatchlist(activeMovie)}
-            aria-pressed={inWatchlist}
-            whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
-            className="flex flex-1 items-center justify-center gap-2 rounded border border-white/40 bg-white/10 px-4 py-2 text-sm font-bold text-white transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={inWatchlist ? "in" : "add"}
-                initial={{ scale: 0.4, opacity: 0, rotate: -45 }}
-                animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                exit={{ scale: 0.4, opacity: 0, rotate: 45 }}
-                transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
-                className="flex"
-              >
-                <FontAwesomeIcon
-                  icon={inWatchlist ? faCheck : faPlus}
-                  className="h-4 w-4"
-                />
-              </motion.span>
-            </AnimatePresence>
-            {inWatchlist ? "In Watchlist" : "Add to Watchlist"}
-          </motion.button>
+          <WatchlistButton movie={activeMovie} className="flex-1" />
         </div>
       </div>
 

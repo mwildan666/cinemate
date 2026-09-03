@@ -12,7 +12,7 @@ const CARD_LIMIT = 6;
 interface MovieSectionProps {
   title: string;
   fetcher: () => Promise<TMDBResponse>;
-  viewAllHref: string;
+  viewAllHref?: string;
   showRating?: boolean;
 }
 
@@ -25,7 +25,8 @@ const MovieSection = ({
   const headingId = useId();
   const { movies, isLoading, error } = useMovies(fetcher);
   const visibleMovies = movies.slice(0, CARD_LIMIT);
-  const shouldShowViewAll = !isLoading && !error && movies.length > CARD_LIMIT;
+  const shouldShowViewAll =
+    Boolean(viewAllHref) && !isLoading && !error && movies.length > CARD_LIMIT;
 
   return (
     <section aria-labelledby={headingId}>
@@ -34,7 +35,7 @@ const MovieSection = ({
           {title.toLocaleUpperCase()}
         </h2>
 
-        {shouldShowViewAll && (
+        {shouldShowViewAll && viewAllHref && (
           <Link
             to={viewAllHref}
             className="flex shrink-0 items-center gap-1.5 rounded text-sm font-bold text-neutral-300 transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-black"

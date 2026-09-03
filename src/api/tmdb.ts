@@ -47,6 +47,11 @@ export const fetchNowPlayingMovies = async (page = 1) => {
   };
 };
 
+export const searchMovies = (query: string, page = 1) =>
+  fetchJSON<TMDBResponse>(
+    `${BASE_URL}/search/movie?query=${encodeURIComponent(query)}&page=${page}`,
+  );
+
 export const fetchWatchProviders = (movieId: number) =>
   fetchJSON<WatchProvidersResponse>(
     `${BASE_URL}/movie/${movieId}/watch/providers`,
